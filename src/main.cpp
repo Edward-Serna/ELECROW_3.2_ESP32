@@ -10,9 +10,46 @@
 TFT_eSPI tft;
 WeatherData weatherData;
 
+// Power Control
+#define BOOT_BUTTON 0  // GPIO 0 is the BOOT button
+
+void IRAM_ATTR handlePowerOff() {
+  // This will be called when BOOT button is pressed
+}
+
+void powerOff() {
+  Serial.println("[Power] Shutting down...");
+  
+  // Turn off display
+  #ifdef TFT_BL
+    digitalWrite(TFT_BL, !TFT_BACKLIGHT_ON);
+  #endif
+  
+  // Disconnect WiFi
+  WiFi.disconnect(true);
+  WiFi.mode(WIFI_OFF);
+  
+  // Show shutdown message briefly
+  tft.fillScreen(TFT_BLACK);
+  
+  Serial.println("[Power] Entering deep sleep. Press BOOT to wake up.");
+  delay(100);
+  
+  // Configure BOOT button as wake source
+  esp_sleep_enable_ext0_wakeup(GPIO_NUM_0, 0); // Wake on LOW (button press)
+  
+  // Enter deep sleep (device fully off, only wakes on BOOT press)
+  esp_deep_sleep_start();
+}
+
+
 void setup() {
   Serial.begin(115200);
   delay(200);
+
+  // Setup BOOT button for power off
+  pinMode(BOOT_BUTTON, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(BOOT_BUTTON), handlePowerOff, FALLING);
 
   // Initialize display
   initDisplay(tft);
@@ -68,6 +105,20 @@ void setup() {
 void loop() {
   static uint32_t lastTimeMs = 0;
   static uint32_t lastWeatherMs = 0;
+  static uint32_t buttonPressStart = 0;
+  static bool buttonPressed = false;
+
+  // Check for press on BOOT button to power off
+  if (digitalRead(BOOT_BUTTON) == LOW) {
+    if (!buttonPressed) {
+      buttonPressed = true;
+      buttonPressStart = millis();
+    } else {
+      powerOff();
+    }
+  } else {
+    buttonPressed = false;
+  }
 
   // Update time display every minute
   if (millis() - lastTimeMs >= TIME_UPDATE_INTERVAL) {
