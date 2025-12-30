@@ -1,7 +1,11 @@
 # ESP32 Weather Station
 Weather display for ESP32 with ILI9488 TFT showing current conditions and forecast.
-<img src="resource/image.png" alt="demo" width="400"  style="display: block; margin: 0 auto;"/>
 
+<p align="center">
+  <img src="resource/image.png" alt="demo" width="400"/>
+</p>
+
+## Setup Instructions
 ## Setup Instructions
 
 ### 1. Create secrets.h file
