@@ -55,7 +55,7 @@ pio device monitor
 - Current observed temperature from nearest weather station
 - NWS forecast for your location
 - Real-time clock with timezone support
-- Auto-refresh every 10 minutes
+- Auto-refresh every minute
 - Modular, organized code structure
 
 ## Security
