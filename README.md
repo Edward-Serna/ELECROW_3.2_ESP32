@@ -6,7 +6,6 @@ Weather display for ESP32 with ILI9488 TFT showing current conditions and foreca
 </p>
 
 ## Setup Instructions
-## Setup Instructions
 
 ### 1. Create secrets.h file
 
